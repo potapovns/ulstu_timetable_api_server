@@ -51,6 +51,8 @@ jobs:
     # Попробуем готовый экшен curl из маркетплэйса
     needs: [ build_and_pub ]
     runs-on: [ ubuntu-latest ]
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
     steps:
       - name: Set tag to env
         run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
