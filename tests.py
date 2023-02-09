@@ -10,7 +10,7 @@ class FlaskAppTests(unittest.TestCase):
 
     def test_api_endpoint(self):
         r = self.app.get('/api')
-        self.assertEqual(r.json, {"status": "test"})
+        self.assertEqual(r.json, {"status": "te st"})
 
     def test_home_page(self):
         r = self.app.get('/')
