@@ -31,7 +31,6 @@ jobs:
     env:
       LOGIN: ${{ secrets.DOCKER_LOGIN }}
       NAME: ${{ secrets.DOCKER_NAME }}
-      TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
