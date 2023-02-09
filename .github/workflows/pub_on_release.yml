@@ -7,7 +7,6 @@ on:
 
 jobs:
   run_tests:
-    # Первую джобу смело можем копипастить из экшена для тестирования
     runs-on: [ ubuntu-latest ]
     steps:
       # Чекаутим код
@@ -20,11 +19,12 @@ jobs:
       - name: Install requirements
         # Устанавливаем зависимости
         run: pip install -r requirements.txt
+
       - name: Run tests
-        # Запускаем тесты
-        run: coverage run src/tests.py
+        run: python3 -m coverage run tests.py
+
       - name: Tests report
-        run: coverage report
+        run: python3 -m coverage report
 
   build_and_pub:
     # Если тесты были пройдены успешно
