@@ -107,7 +107,7 @@ def api_get_timetable_by_group_name(group_name):
     session = requests.Session()
     authenticate(session)
     response_json = get_timetable_by_groupname(session, group_name)
-    return response_json
+    return response_json, 200
 
 
 @blueprint.route('/api/timetable/groups', methods=['GET'])
@@ -115,4 +115,4 @@ def api_get_groups():
     session = requests.Session()
     authenticate(session)
     response_json = get_groups_list(session)
-    return response_json
+    return response_json, 200

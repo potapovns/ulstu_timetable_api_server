@@ -1,7 +1,7 @@
 import os
 import logger
 import api_timetable
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 from loguru import logger as log
 
@@ -11,6 +11,16 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY_API")
 
 HOST = os.getenv("SERVER_HOST")
 PORT = os.getenv("SERVER_PORT")
+
+
+@app.route("/")
+def home_test():
+    return "Hello world!"
+
+
+@app.route("/api")
+def api_test():
+    return jsonify({"status": "test"})
 
 
 def main():
