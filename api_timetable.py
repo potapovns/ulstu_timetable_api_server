@@ -1,7 +1,11 @@
 import os
 import env
-import credentials
 from loguru import logger as log
+
+try:
+    import credentials
+except ImportError:
+    log.warning("Credentials file not found!")
 
 import flask
 import requests
