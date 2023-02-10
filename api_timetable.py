@@ -6,7 +6,7 @@ import env
 from loguru import logger as log
 
 try:
-    import credentials
+    import credentialsre
 except ImportError:
     log.warning("Credentials file not found! Please set credentials to environ variables.")
 
@@ -118,23 +118,31 @@ def get_timetable_by_groupname(session, groupname):
 
 @blueprint.route('/api/timetable/<string:group_name>', methods=['GET'])
 def api_get_timetable_by_group_name(group_name):
-    if USERNAME is None or PASSWORD is None:
+    if not USERNAME or not PASSWORD:
         initialize_credentials()
-    if USERNAME is None or PASSWORD is None:
+    if not USERNAME or not PASSWORD:
         return jsonify({"error": "Credentials environment required!"}), 400
     session = requests.Session()
-    authenticate(session)
+    try:
+        authenticate(session)
+    except Exception as e:
+        log.error("Auth failed!")
+        return jsonify({"error": "Authentication failed!"}), 401
     response_json = get_timetable_by_groupname(session, group_name)
     return response_json, 200
 
 
 @blueprint.route('/api/timetable/groups', methods=['GET'])
 def api_get_groups():
-    if USERNAME is None or PASSWORD is None:
+    if not USERNAME or not PASSWORD:
         initialize_credentials()
-    if USERNAME is None or PASSWORD is None:
+    if not USERNAME or not PASSWORD:
         return jsonify({"error": "Credentials environment required!"}), 400
     session = requests.Session()
-    authenticate(session)
+    try:
+        authenticate(session)
+    except Exception as e:
+        log.error("Auth failed!")
+        return jsonify({"error": "Authentication failed!"}), 401
     response_json = get_groups_list(session)
     return response_json, 200
