@@ -43,8 +43,8 @@ HEADERS_AUTH = {
     "sec-ch-ua-platform": "\"Windows\""
 }
 
-USERNAME = ""
-PASSWORD = ""
+USERNAME = None
+PASSWORD = None
 
 blueprint = flask.Blueprint(
     'timetable_api',
@@ -56,8 +56,8 @@ blueprint = flask.Blueprint(
 def initialize_credentials():
     global USERNAME
     global PASSWORD
-    USERNAME = os.getenv('ULSTU_USERNAME')
-    PASSWORD = os.getenv('ULSTU_PASSWORD')
+    USERNAME = os.getenv('ULSTU_USERNAME', None)
+    PASSWORD = os.getenv('ULSTU_PASSWORD', None)
 
 
 def authenticate(session):
