@@ -6,7 +6,7 @@ import env
 from loguru import logger as log
 
 try:
-    import credentialsre
+    import credentials
 except ImportError:
     log.warning("Credentials file not found! Please set credentials to environ variables.")
 
