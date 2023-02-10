@@ -1,11 +1,14 @@
 import os
+
+from flask import jsonify
+
 import env
 from loguru import logger as log
 
 try:
     import credentials
 except ImportError:
-    log.warning("Credentials file not found!")
+    log.warning("Credentials file not found! Please set credentials to environ variables.")
 
 import flask
 import requests
@@ -40,14 +43,33 @@ HEADERS_AUTH = {
     "sec-ch-ua-platform": "\"Windows\""
 }
 
-USERNAME = os.getenv('ULSTU_USERNAME')
-PASSWORD = os.getenv('ULSTU_PASSWORD')
+USERNAME = ""
+PASSWORD = ""
 
 blueprint = flask.Blueprint(
     'timetable_api',
     __name__,
     template_folder='templates'
 )
+
+
+def initialize_credentials():
+    global USERNAME
+    global PASSWORD
+    USERNAME = os.getenv('ULSTU_USERNAME')
+    PASSWORD = os.getenv('ULSTU_PASSWORD')
+
+
+def credentials_required(func):
+    def decorated_func(*args, **kwargs):
+        if USERNAME is None or PASSWORD is None:
+            initialize_credentials()
+        if USERNAME is None or PASSWORD is None:
+            return jsonify({"error": "Credentials environment required!"}), 400
+        result = func(*args, **kwargs)
+        return result
+
+    return decorated_func
 
 
 def authenticate(session):
@@ -107,7 +129,11 @@ def get_timetable_by_groupname(session, groupname):
 
 
 @blueprint.route('/api/timetable/<string:group_name>', methods=['GET'])
+@credentials_required
 def api_get_timetable_by_group_name(group_name):
+    initialize_credentials()
+    if USERNAME is None or PASSWORD is None:
+        return
     session = requests.Session()
     authenticate(session)
     response_json = get_timetable_by_groupname(session, group_name)
@@ -115,6 +141,7 @@ def api_get_timetable_by_group_name(group_name):
 
 
 @blueprint.route('/api/timetable/groups', methods=['GET'])
+@credentials_required
 def api_get_groups():
     session = requests.Session()
     authenticate(session)
