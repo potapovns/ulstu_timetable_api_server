@@ -1,6 +1,6 @@
 import os
 
-from flask import jsonify
+from flask import jsonify, request
 
 import env
 from loguru import logger as log
@@ -45,6 +45,7 @@ HEADERS_AUTH = {
 
 USERNAME = None
 PASSWORD = None
+SECRET_KEY_API = None
 
 blueprint = flask.Blueprint(
     'timetable_api',
@@ -56,8 +57,10 @@ blueprint = flask.Blueprint(
 def initialize_credentials():
     global USERNAME
     global PASSWORD
+    global SECRET_KEY_API
     USERNAME = os.getenv('ULSTU_USERNAME', None)
     PASSWORD = os.getenv('ULSTU_PASSWORD', None)
+    SECRET_KEY_API = os.getenv("SECRET_KEY_API", None)
 
 
 def authenticate(session):
@@ -118,31 +121,35 @@ def get_timetable_by_groupname(session, groupname):
 
 @blueprint.route('/api/timetable/<string:group_name>', methods=['GET'])
 def api_get_timetable_by_group_name(group_name):
-    if not USERNAME or not PASSWORD:
+    if not USERNAME or not PASSWORD or not SECRET_KEY_API:
         initialize_credentials()
-    if not USERNAME or not PASSWORD:
+    if not USERNAME or not PASSWORD or not SECRET_KEY_API:
         return jsonify({"error": "Credentials environment required!"}), 400
+    if request.headers.get('auth') != SECRET_KEY_API:
+        return jsonify({'message': 'Bad auth token'}), 401
     session = requests.Session()
     try:
         authenticate(session)
     except Exception as e:
         log.error("Auth failed!")
-        return jsonify({"error": "Authentication failed!"}), 401
+        return jsonify({"error": "Authentication failed!"}), 402
     response_json = get_timetable_by_groupname(session, group_name)
     return response_json, 200
 
 
 @blueprint.route('/api/timetable/groups', methods=['GET'])
 def api_get_groups():
-    if not USERNAME or not PASSWORD:
+    if not USERNAME or not PASSWORD or not SECRET_KEY_API:
         initialize_credentials()
-    if not USERNAME or not PASSWORD:
+    if not USERNAME or not PASSWORD or not SECRET_KEY_API:
         return jsonify({"error": "Credentials environment required!"}), 400
+    if request.headers.get('auth') != SECRET_KEY_API:
+        return jsonify({'message': 'Bad auth token'}), 401
     session = requests.Session()
     try:
         authenticate(session)
     except Exception as e:
         log.error("Auth failed!")
-        return jsonify({"error": "Authentication failed!"}), 401
+        return jsonify({"error": "Authentication failed!"}), 402
     response_json = get_groups_list(session)
     return response_json, 200
